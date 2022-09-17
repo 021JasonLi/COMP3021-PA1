@@ -22,7 +22,7 @@ public abstract class AbstractSokobanGame implements SokobanGame {
      */
     protected boolean shouldStop() {
         // TODO
-        throw new NotImplementedException();
+        return false;
     }
 
     /**
@@ -31,6 +31,6 @@ public abstract class AbstractSokobanGame implements SokobanGame {
      */
     protected ActionResult processAction(@NotNull Action action) {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 }

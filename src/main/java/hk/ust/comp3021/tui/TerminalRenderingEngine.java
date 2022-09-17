@@ -29,16 +29,17 @@ public class TerminalRenderingEngine implements RenderingEngine {
     @Override
     public void render(@NotNull GameState state) {
         final var builder = new StringBuilder();
-        for (int y = 0; y <= state.getMapMaxHeight(); y++) {
-            for (int x = 0; x <= state.getMapMaxWidth(); x++) {
+        for (int y = 0; y < state.getMapMaxHeight(); y++) {
+            for (int x = 0; x < state.getMapMaxWidth(); x++) {
                 final var entity = state.getEntity(Position.of(x, y));
                 final var charToPrint = switch (entity) {
                     // TODO
-                    case Wall ignored -> throw new NotImplementedException();
-                    case Box b -> throw new NotImplementedException();
-                    case Player p -> throw new NotImplementedException();
-                    case Empty ignored -> throw new NotImplementedException();
+//                    case Wall ignored -> throw new NotImplementedException();
+//                    case Box b -> throw new NotImplementedException();
+//                    case Player p -> throw new NotImplementedException();
+//                    case Empty ignored -> throw new NotImplementedException();
                     case null -> ' ';
+                    default -> ' ';
                 };
                 builder.append(charToPrint);
             }
@@ -51,6 +52,6 @@ public class TerminalRenderingEngine implements RenderingEngine {
     public void message(@NotNull String content) {
         // TODO
         // Hint: System.out is also a PrintStream.
-        throw new NotImplementedException();
+
     }
 }

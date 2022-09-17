@@ -30,7 +30,7 @@ public class GameState {
      */
     public GameState(@NotNull GameMap map) {
         // TODO
-        throw new NotImplementedException();
+
     }
 
     /**
@@ -41,7 +41,7 @@ public class GameState {
      */
     public @Nullable Position getPlayerPositionById(int id) {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -51,7 +51,7 @@ public class GameState {
      */
     public @NotNull Set<Position> getAllPlayerPositions() {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -62,7 +62,7 @@ public class GameState {
      */
     public @Nullable Entity getEntity(@NotNull Position position) {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -73,7 +73,7 @@ public class GameState {
      */
     public @NotNull @Unmodifiable Set<Position> getDestinations() {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -85,7 +85,7 @@ public class GameState {
      */
     public Optional<Integer> getUndoQuota() {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -96,7 +96,7 @@ public class GameState {
      */
     public boolean isWin() {
 // TODO
-        throw new NotImplementedException();
+        return false;
     }
 
     /**
@@ -109,7 +109,7 @@ public class GameState {
      */
     public void move(Position from, Position to) {
         // TODO
-        throw new NotImplementedException();
+
     }
 
     /**
@@ -122,7 +122,7 @@ public class GameState {
      */
     public void checkpoint() {
         // TODO
-        throw new NotImplementedException();
+
     }
 
     /**
@@ -134,7 +134,7 @@ public class GameState {
      */
     public void undo() {
         // TODO
-        throw new NotImplementedException();
+
     }
 
     /**
@@ -145,7 +145,7 @@ public class GameState {
      */
     public int getMapMaxWidth() {
         // TODO
-        throw new NotImplementedException();
+        return 0;
     }
 
     /**
@@ -156,6 +156,6 @@ public class GameState {
      */
     public int getMapMaxHeight() {
         // TODO
-        throw new NotImplementedException();
+        return 0;
     }
 }

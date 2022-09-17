@@ -32,12 +32,12 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
         this.renderingEngine = renderingEngine;
         // TODO
         // Check the number of players
-        throw new NotImplementedException();
+
     }
 
     @Override
     public void run() {
         // TODO
-        throw new NotImplementedException();
+
     }
 }

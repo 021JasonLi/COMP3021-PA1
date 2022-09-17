@@ -35,7 +35,7 @@ public abstract sealed class Move extends Action permits Move.Down, Move.Left, M
         @Override
         public @NotNull Position nextPosition(@NotNull Position currentPosition) {
             // TODO
-            throw new NotImplementedException();
+            return null;
         }
     }
 
@@ -53,7 +53,7 @@ public abstract sealed class Move extends Action permits Move.Down, Move.Left, M
         @Override
         public @NotNull Position nextPosition(@NotNull Position currentPosition) {
             // TODO
-            throw new NotImplementedException();
+            return null;
         }
     }
 
@@ -71,7 +71,7 @@ public abstract sealed class Move extends Action permits Move.Down, Move.Left, M
         @Override
         public @NotNull Position nextPosition(@NotNull Position currentPosition) {
             // TODO
-            throw new NotImplementedException();
+            return null;
         }
     }
 
@@ -89,7 +89,7 @@ public abstract sealed class Move extends Action permits Move.Down, Move.Left, M
         @Override
         public @NotNull Position nextPosition(@NotNull Position currentPosition) {
             // TODO
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

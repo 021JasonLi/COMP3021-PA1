@@ -37,6 +37,6 @@ public class TerminalInputEngine implements InputEngine {
         final var inputLine = terminalScanner.nextLine();
 
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 }

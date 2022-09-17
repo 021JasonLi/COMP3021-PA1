@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.io.FileInputStream;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,6 +21,10 @@ import java.util.Set;
  * GameBoard is capable to create many GameState instances, each representing an ongoing game.
  */
 public class GameMap {
+    private int maxWidth;
+    private int maxHeight;
+    private Set<Position> destinations;
+    private int undoLimit;
 
     /**
      * Create a new GameMap with width, height, set of box destinations and undo limit.
@@ -33,8 +38,10 @@ public class GameMap {
      *                     -1 means unlimited. Other negative numbers are not allowed.
      */
     public GameMap(int maxWidth, int maxHeight, Set<Position> destinations, int undoLimit) {
-        // TODO
-        throw new NotImplementedException();
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
+        this.destinations = destinations;
+        this.undoLimit = undoLimit;
     }
 
     /**
@@ -74,7 +81,34 @@ public class GameMap {
      */
     public static GameMap parse(String mapText) {
         // TODO
-        throw new NotImplementedException();
+        String[] splitedText = mapText.split("\n"); // split the text line by line
+
+        int undoLimit = Integer.parseInt(splitedText[0]); // first line contains undoLimit (str -> int)
+        if (undoLimit < -1) { // invalid undoLimit
+            throw new IllegalArgumentException();
+        }
+
+        int[] playerList = new int[26]; // for checking player's validity
+        for (int i = 0; i < playerList.length; i++) { // initialize all elements
+            playerList[i] = 0;
+        }
+        int[] boxList = new int[26]; // for checking box's validity
+        for (int i = 0; i < boxList.length; i++) { // initialize all elements
+            boxList[i] = 0;
+        }
+        int[] destinationsList = new int[26]; // for checking destinationsList's validity
+        for (int i = 0; i < destinationsList.length; i++) { // initialize all elements
+            destinationsList[i] = 0;
+        }
+
+        for (int i = 1; i < splitedText.length; i++) { // checking each line (except first line)
+            for (int j = 0; j < splitedText[i].length(); j++) { // checking each character
+                char temp = splitedText[i].charAt(j); // get the character
+
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -86,7 +120,7 @@ public class GameMap {
     @Nullable
     public Entity getEntity(Position position) {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -97,7 +131,7 @@ public class GameMap {
      */
     public void putEntity(Position position, Entity entity) {
         // TODO
-        throw new NotImplementedException();
+
     }
 
     /**
@@ -107,7 +141,7 @@ public class GameMap {
      */
     public @NotNull @Unmodifiable Set<Position> getDestinations() {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -117,7 +151,7 @@ public class GameMap {
      */
     public Optional<Integer> getUndoLimit() {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -127,7 +161,7 @@ public class GameMap {
      */
     public Set<Integer> getPlayerIds() {
         // TODO
-        throw new NotImplementedException();
+        return null;
     }
 
     /**
@@ -136,8 +170,7 @@ public class GameMap {
      * @return maximum width.
      */
     public int getMaxWidth() {
-        // TODO
-        throw new NotImplementedException();
+        return maxWidth;
     }
 
     /**
@@ -146,7 +179,6 @@ public class GameMap {
      * @return maximum height.
      */
     public int getMaxHeight() {
-        // TODO
-        throw new NotImplementedException();
+        return maxHeight;
     }
 }
