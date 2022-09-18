@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.FileInputStream;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ public class GameMap {
     private int maxHeight;
     private Set<Position> destinations;
     private int undoLimit;
+    // private Set<Integer> playerIDs;
 
     /**
      * Create a new GameMap with width, height, set of box destinations and undo limit.
@@ -80,7 +82,6 @@ public class GameMap {
      *                                  or if there are players that have no corresponding boxes.
      */
     public static GameMap parse(String mapText) {
-        // TODO
         String[] splitedText = mapText.split("\n"); // split the text line by line
 
         int undoLimit = Integer.parseInt(splitedText[0]); // first line contains undoLimit (str -> int)
@@ -88,6 +89,7 @@ public class GameMap {
             throw new IllegalArgumentException();
         }
 
+        // initialization
         int[] playerList = new int[26]; // for checking player's validity
         for (int i = 0; i < playerList.length; i++) { // initialize all elements
             playerList[i] = 0;
@@ -96,19 +98,68 @@ public class GameMap {
         for (int i = 0; i < boxList.length; i++) { // initialize all elements
             boxList[i] = 0;
         }
-        int[] destinationsList = new int[26]; // for checking destinationsList's validity
-        for (int i = 0; i < destinationsList.length; i++) { // initialize all elements
-            destinationsList[i] = 0;
-        }
+        int numOfdestinations = 0; // for checking destination's validity
+        int maxWeight = 0; // for creating GameMap object used
+        int maxHeight = 0; // for creating GameMap object used
+        Set<Position> destinations = new HashSet<Position>();
 
+        // handle each character and finding width & height
         for (int i = 1; i < splitedText.length; i++) { // checking each line (except first line)
+            maxHeight += 1;
+            int tempWeight = 0; // for checking weight of each line
             for (int j = 0; j < splitedText[i].length(); j++) { // checking each character
                 char temp = splitedText[i].charAt(j); // get the character
+                tempWeight += 1;
+                if ((temp >= 'A') && (temp <= 'Z')) { // finding players
+                    int tempIndex = temp - 65;
+                    playerList[tempIndex] += 1; // add 1 to the corresponding box
+                    continue;
+                }
+                if ((temp >= 'a') && (temp <= 'z')) { // finding boxes
+                    int tempIndex = temp - 97;
+                    boxList[tempIndex] += 1; // add 1 to the corresponding box
+                }
+                if (temp == '@') { // finding destinations
+                    numOfdestinations += 1; // add 1 to the variable
+                    destinations.add(new Position(j, i-1));
 
+                }
+            }
+            if (tempWeight > maxWeight) { // update maxWeight if needed
+                maxWeight = tempWeight;
             }
         }
 
-        return null;
+        // do checking
+        int sumChecking = 0;
+        for (int i = 0; i < playerList.length; i++) {
+            if (playerList[i] > 1) { // same player exist more than once
+                throw new IllegalArgumentException();
+            }
+            sumChecking += playerList[i];
+        }
+        if (sumChecking == 0) { // no players in the map
+            throw new IllegalArgumentException();
+        }
+        sumChecking = 0;
+        for (int i = 0; i < boxList.length; i++) {
+            sumChecking += boxList[i];
+        }
+        if (sumChecking != numOfdestinations) { // box and destination not equal
+            throw new IllegalArgumentException();
+        }
+        for (int i = 0; i < playerList.length; i++) {
+            if ((playerList[i] == 0) && (boxList[i] > 0)) { // no players but have corresponding box
+                throw new IllegalArgumentException();
+            }
+            if ((playerList[i] > 0) && (boxList[i] == 0)) { // have player but no corresponding box
+                throw new IllegalArgumentException();
+            }
+        }
+
+        // after checking, all ok
+        return new GameMap(maxWeight, maxHeight, destinations, undoLimit);
+
     }
 
     /**
@@ -140,8 +191,7 @@ public class GameMap {
      * @return a set of positions.
      */
     public @NotNull @Unmodifiable Set<Position> getDestinations() {
-        // TODO
-        return null;
+        return destinations;
     }
 
     /**
@@ -150,8 +200,7 @@ public class GameMap {
      * @return undo limit.
      */
     public Optional<Integer> getUndoLimit() {
-        // TODO
-        return null;
+        return Optional.of(undoLimit);
     }
 
     /**
