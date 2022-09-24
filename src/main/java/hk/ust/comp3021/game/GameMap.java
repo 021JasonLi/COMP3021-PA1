@@ -26,7 +26,9 @@ public class GameMap {
     private int maxHeight;
     private Set<Position> destinations;
     private int undoLimit;
-    // private Set<Integer> playerIDs;
+    private static Set<Integer> playerIDs = new HashSet<Integer>();
+    private static Entity[][] EntityArray;
+
 
     /**
      * Create a new GameMap with width, height, set of box destinations and undo limit.
@@ -44,6 +46,26 @@ public class GameMap {
         this.maxHeight = maxHeight;
         this.destinations = destinations;
         this.undoLimit = undoLimit;
+
+        // put all the entities into the array
+        EntityArray = new Entity[maxWidth][maxHeight];
+        for (int i = 0; i < maxHeight; i++) {
+            for (int j = 0; j < maxWidth; j++)  {
+//                char temp = splitedText[i+1].charAt(j); // get the character
+//                if ((temp >= 'A') && (temp <= 'Z')) { // finding player entity
+//
+//                }
+//                else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
+//
+//                }
+//                else if (temp == '#') { // finding wall entity
+//
+//                }
+//                else if ((temp == ' ') || (temp == '@')){ // finding empty entity
+//
+//                }
+            }
+        }
     }
 
     /**
@@ -99,21 +121,21 @@ public class GameMap {
             boxList[i] = 0;
         }
         int numOfdestinations = 0; // for checking destination's validity
-        int maxWeight = 0; // for creating GameMap object used
+        int maxWidth = 0; // for creating GameMap object used
         int maxHeight = 0; // for creating GameMap object used
         Set<Position> destinations = new HashSet<Position>();
 
         // handle each character and finding width & height
         for (int i = 1; i < splitedText.length; i++) { // checking each line (except first line)
             maxHeight += 1;
-            int tempWeight = 0; // for checking weight of each line
+            int tempWidth = 0; // for checking weight of each line
             for (int j = 0; j < splitedText[i].length(); j++) { // checking each character
                 char temp = splitedText[i].charAt(j); // get the character
-                tempWeight += 1;
+                tempWidth += 1;
                 if ((temp >= 'A') && (temp <= 'Z')) { // finding players
                     int tempIndex = temp - 65;
                     playerList[tempIndex] += 1; // add 1 to the corresponding box
-                    continue;
+                    playerIDs.add(tempIndex); // add the playerID to the set
                 }
                 if ((temp >= 'a') && (temp <= 'z')) { // finding boxes
                     int tempIndex = temp - 97;
@@ -122,11 +144,10 @@ public class GameMap {
                 if (temp == '@') { // finding destinations
                     numOfdestinations += 1; // add 1 to the variable
                     destinations.add(new Position(j, i-1));
-
                 }
             }
-            if (tempWeight > maxWeight) { // update maxWeight if needed
-                maxWeight = tempWeight;
+            if (tempWidth > maxWidth) { // update maxWeight if needed
+                maxWidth = tempWidth;
             }
         }
 
@@ -158,7 +179,7 @@ public class GameMap {
         }
 
         // after checking, all ok
-        return new GameMap(maxWeight, maxHeight, destinations, undoLimit);
+        return new GameMap(maxWidth, maxHeight, destinations, undoLimit);
 
     }
 
@@ -209,8 +230,7 @@ public class GameMap {
      * @return a set of player id.
      */
     public Set<Integer> getPlayerIds() {
-        // TODO
-        return null;
+        return playerIDs;
     }
 
     /**

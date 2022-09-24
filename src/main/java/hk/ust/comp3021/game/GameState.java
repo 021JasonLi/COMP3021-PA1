@@ -23,6 +23,7 @@ import java.util.Set;
  */
 public class GameState {
 
+
     /**
      * Create a running game state from a game map.
      *
