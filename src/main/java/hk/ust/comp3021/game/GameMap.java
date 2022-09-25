@@ -26,8 +26,9 @@ public class GameMap {
     private int maxHeight;
     private Set<Position> destinations;
     private int undoLimit;
-    private static Set<Integer> playerIDs = new HashSet<Integer>();
-    private static Entity[][] EntityArray;
+    public static Set<Integer> playerIDs = new HashSet<Integer>();
+    public static Entity[][] EntityArray;
+    public static String[] mapTextSplited;
 
 
     /**
@@ -49,21 +50,27 @@ public class GameMap {
 
         // put all the entities into the array
         EntityArray = new Entity[maxWidth][maxHeight];
+        for (int i = 0; i < maxHeight; i++) { // set all to null first since the map may be non-rectangle
+            for (int j = 0; j < maxWidth; j++) {
+                EntityArray[i][j] = null;
+            }
+        }
+
         for (int i = 0; i < maxHeight; i++) {
             for (int j = 0; j < maxWidth; j++)  {
-//                char temp = splitedText[i+1].charAt(j); // get the character
-//                if ((temp >= 'A') && (temp <= 'Z')) { // finding player entity
-//
-//                }
-//                else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
-//
-//                }
-//                else if (temp == '#') { // finding wall entity
-//
-//                }
-//                else if ((temp == ' ') || (temp == '@')){ // finding empty entity
-//
-//                }
+                char temp = mapTextSplited[i+1].charAt(j); // get the character
+                if ((temp >= 'A') && (temp <= 'Z')) { // finding player entity
+                    putEntity(new Position(j, i), new Player(temp-65));
+                }
+                else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
+                    putEntity(new Position(j, i), new Box(temp-97));
+                }
+                else if (temp == '#') { // finding wall entity
+                    putEntity(new Position(j, i), new Wall());
+                }
+                else if ((temp == ' ') || (temp == '@')){ // finding empty entity
+                    putEntity(new Position(j, i), new Empty());
+                }
             }
         }
     }
@@ -104,9 +111,9 @@ public class GameMap {
      *                                  or if there are players that have no corresponding boxes.
      */
     public static GameMap parse(String mapText) {
-        String[] splitedText = mapText.split("\n"); // split the text line by line
+        mapTextSplited = mapText.split("\n"); // split the text line by line
 
-        int undoLimit = Integer.parseInt(splitedText[0]); // first line contains undoLimit (str -> int)
+        int undoLimit = Integer.parseInt(mapTextSplited[0]); // first line contains undoLimit (str -> int)
         if (undoLimit < -1) { // invalid undoLimit
             throw new IllegalArgumentException();
         }
@@ -126,11 +133,11 @@ public class GameMap {
         Set<Position> destinations = new HashSet<Position>();
 
         // handle each character and finding width & height
-        for (int i = 1; i < splitedText.length; i++) { // checking each line (except first line)
+        for (int i = 1; i < mapTextSplited.length; i++) { // checking each line (except first line)
             maxHeight += 1;
             int tempWidth = 0; // for checking weight of each line
-            for (int j = 0; j < splitedText[i].length(); j++) { // checking each character
-                char temp = splitedText[i].charAt(j); // get the character
+            for (int j = 0; j < mapTextSplited[i].length(); j++) { // checking each character
+                char temp = mapTextSplited[i].charAt(j); // get the character
                 tempWidth += 1;
                 if ((temp >= 'A') && (temp <= 'Z')) { // finding players
                     int tempIndex = temp - 65;
@@ -191,8 +198,7 @@ public class GameMap {
      */
     @Nullable
     public Entity getEntity(Position position) {
-        // TODO
-        return null;
+        return EntityArray[position.y()][position.x()];
     }
 
     /**
@@ -202,8 +208,7 @@ public class GameMap {
      * @param entity   the entity to put into game map.
      */
     public void putEntity(Position position, Entity entity) {
-        // TODO
-
+        EntityArray[position.y()][position.x()] = entity;
     }
 
     /**

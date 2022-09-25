@@ -1,10 +1,8 @@
 package hk.ust.comp3021.tui;
 
 
-import hk.ust.comp3021.game.AbstractSokobanGame;
-import hk.ust.comp3021.game.GameState;
-import hk.ust.comp3021.game.InputEngine;
-import hk.ust.comp3021.game.RenderingEngine;
+import hk.ust.comp3021.entities.Player;
+import hk.ust.comp3021.game.*;
 import hk.ust.comp3021.utils.NotImplementedException;
 
 /**
@@ -30,9 +28,18 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
         super(gameState);
         this.inputEngine = inputEngine;
         this.renderingEngine = renderingEngine;
-        // TODO
         // Check the number of players
-
+        int numOfPlayers = 0;
+        for (int i = 0; i < gameState.getMapMaxHeight(); i++) {
+            for (int j = 0; j < gameState.getMapMaxWidth(); j++) {
+                if (gameState.getEntity(new Position(j ,i)) instanceof Player) {
+                    numOfPlayers++;
+                }
+            }
+        }
+        if (numOfPlayers > 2) {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override

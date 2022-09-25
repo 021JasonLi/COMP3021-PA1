@@ -12,7 +12,8 @@ import java.util.Set;
 /**
  * The state of the Sokoban Game.
  * Each game state represents an ongoing game.
- * As the game goes, the game state changes while players are moving while the original game map stays the unmodified.
+ * As the game goes, the game state changes while players are moving
+ * while the original game map stays the unmodified.
  * <b>The game state should not modify the original game map.</b>
  * <p>
  * GameState consists of things changing as the game goes, such as:
@@ -22,7 +23,9 @@ import java.util.Set;
  * <li>Undo quota left.</li>
  */
 public class GameState {
-
+    private int maxMapWidth;
+    private int maxMapHeight;
+    private Set<Position> destinations;
 
     /**
      * Create a running game state from a game map.
@@ -31,7 +34,9 @@ public class GameState {
      */
     public GameState(@NotNull GameMap map) {
         // TODO
-
+        maxMapWidth = map.getMaxWidth();
+        maxMapHeight = map.getMaxHeight();
+        destinations = map.getDestinations();
     }
 
     /**
@@ -73,8 +78,7 @@ public class GameState {
      * @return a set of positions.
      */
     public @NotNull @Unmodifiable Set<Position> getDestinations() {
-        // TODO
-        return null;
+        return destinations;
     }
 
     /**
@@ -96,7 +100,7 @@ public class GameState {
      * @return true is the game wins.
      */
     public boolean isWin() {
-// TODO
+        // TODO
         return false;
     }
 
@@ -145,8 +149,7 @@ public class GameState {
      * @return maximum width.
      */
     public int getMapMaxWidth() {
-        // TODO
-        return 0;
+        return maxMapWidth;
     }
 
     /**
@@ -156,7 +159,6 @@ public class GameState {
      * @return maximum height.
      */
     public int getMapMaxHeight() {
-        // TODO
-        return 0;
+        return maxMapHeight;
     }
 }
