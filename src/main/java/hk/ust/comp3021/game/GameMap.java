@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import javax.swing.text.html.Option;
 import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.Optional;
@@ -25,10 +26,11 @@ public class GameMap {
     private int maxWidth;
     private int maxHeight;
     private Set<Position> destinations;
-    private int undoLimit;
-    public static Set<Integer> playerIDs = new HashSet<Integer>();
-    public static Entity[][] EntityArray;
+    private Optional<Integer> undoLimit;
+    private static Set<Integer> playerIDs = new HashSet<Integer>();
+    private static Entity[][] EntityArray;
     public static String[] mapTextSplited;
+//    public static int undoQuota;
 
 
     /**
@@ -42,14 +44,16 @@ public class GameMap {
      *                     0 means undo is not allowed.
      *                     -1 means unlimited. Other negative numbers are not allowed.
      */
-    public GameMap(int maxWidth, int maxHeight, Set<Position> destinations, int undoLimit) {
+    public GameMap(int maxWidth, int maxHeight, Set<Position> destinations, Optional<Integer> undoLimit) {
         this.maxWidth = maxWidth;
         this.maxHeight = maxHeight;
         this.destinations = destinations;
         this.undoLimit = undoLimit;
 
+//        undoQuota = undoLimit.get();
+
         // put all the entities into the array
-        EntityArray = new Entity[maxWidth][maxHeight];
+        EntityArray = new Entity[maxHeight][maxWidth];
         for (int i = 0; i < maxHeight; i++) { // set all to null first since the map may be non-rectangle
             for (int j = 0; j < maxWidth; j++) {
                 EntityArray[i][j] = null;
@@ -57,19 +61,19 @@ public class GameMap {
         }
 
         for (int i = 0; i < maxHeight; i++) {
-            for (int j = 0; j < maxWidth; j++)  {
+            for (int j = 0; j < mapTextSplited[i+1].length(); j++)  {
                 char temp = mapTextSplited[i+1].charAt(j); // get the character
                 if ((temp >= 'A') && (temp <= 'Z')) { // finding player entity
-                    putEntity(new Position(j, i), new Player(temp-65));
+                    putEntity(new Position(i, j), new Player(temp-65));
                 }
                 else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
-                    putEntity(new Position(j, i), new Box(temp-97));
+                    putEntity(new Position(i, j), new Box(temp-97));
                 }
                 else if (temp == '#') { // finding wall entity
-                    putEntity(new Position(j, i), new Wall());
+                    putEntity(new Position(i, j), new Wall());
                 }
-                else if ((temp == ' ') || (temp == '@')){ // finding empty entity
-                    putEntity(new Position(j, i), new Empty());
+                else if ((temp == '.') || (temp == '@')){ // finding empty entity
+                    putEntity(new Position(i, j), new Empty());
                 }
             }
         }
@@ -144,11 +148,11 @@ public class GameMap {
                     playerList[tempIndex] += 1; // add 1 to the corresponding box
                     playerIDs.add(tempIndex); // add the playerID to the set
                 }
-                if ((temp >= 'a') && (temp <= 'z')) { // finding boxes
+                else if ((temp >= 'a') && (temp <= 'z')) { // finding boxes
                     int tempIndex = temp - 97;
                     boxList[tempIndex] += 1; // add 1 to the corresponding box
                 }
-                if (temp == '@') { // finding destinations
+                else if (temp == '@') { // finding destinations
                     numOfdestinations += 1; // add 1 to the variable
                     destinations.add(new Position(j, i-1));
                 }
@@ -159,6 +163,7 @@ public class GameMap {
         }
 
         // do checking
+        // for players
         int sumChecking = 0;
         for (int i = 0; i < playerList.length; i++) {
             if (playerList[i] > 1) { // same player exist more than once
@@ -169,6 +174,8 @@ public class GameMap {
         if (sumChecking == 0) { // no players in the map
             throw new IllegalArgumentException();
         }
+
+        // for boxes and des.
         sumChecking = 0;
         for (int i = 0; i < boxList.length; i++) {
             sumChecking += boxList[i];
@@ -186,7 +193,7 @@ public class GameMap {
         }
 
         // after checking, all ok
-        return new GameMap(maxWidth, maxHeight, destinations, undoLimit);
+        return new GameMap(maxWidth, maxHeight, destinations, Optional.ofNullable(undoLimit));
 
     }
 
@@ -208,7 +215,7 @@ public class GameMap {
      * @param entity   the entity to put into game map.
      */
     public void putEntity(Position position, Entity entity) {
-        EntityArray[position.y()][position.x()] = entity;
+        EntityArray[position.x()][position.y()] = entity;
     }
 
     /**
@@ -226,7 +233,7 @@ public class GameMap {
      * @return undo limit.
      */
     public Optional<Integer> getUndoLimit() {
-        return Optional.of(undoLimit);
+        return undoLimit;
     }
 
     /**

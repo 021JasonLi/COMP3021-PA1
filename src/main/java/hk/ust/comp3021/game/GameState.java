@@ -1,6 +1,8 @@
 package hk.ust.comp3021.game;
 
+import hk.ust.comp3021.entities.Box;
 import hk.ust.comp3021.entities.Entity;
+import hk.ust.comp3021.entities.Player;
 import hk.ust.comp3021.utils.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,9 +25,12 @@ import java.util.Set;
  * <li>Undo quota left.</li>
  */
 public class GameState {
-    private int maxMapWidth;
-    private int maxMapHeight;
-    private Set<Position> destinations;
+    private GameMap gameMap;
+    private Set<Position> boxPosition;
+    private Set<Position> playerPosition;
+    // move history?
+    private int undoQuota;
+
 
     /**
      * Create a running game state from a game map.
@@ -34,9 +39,12 @@ public class GameState {
      */
     public GameState(@NotNull GameMap map) {
         // TODO
-        maxMapWidth = map.getMaxWidth();
-        maxMapHeight = map.getMaxHeight();
-        destinations = map.getDestinations();
+        gameMap = map;
+        undoQuota = map.getUndoLimit().get();
+
+
+
+
     }
 
     /**
@@ -67,8 +75,7 @@ public class GameState {
      * @return the entity object.
      */
     public @Nullable Entity getEntity(@NotNull Position position) {
-        // TODO
-        return null;
+        return gameMap.getEntity(position);
     }
 
     /**
@@ -78,7 +85,7 @@ public class GameState {
      * @return a set of positions.
      */
     public @NotNull @Unmodifiable Set<Position> getDestinations() {
-        return destinations;
+        return gameMap.getDestinations();
     }
 
     /**
@@ -89,8 +96,12 @@ public class GameState {
      * {@link Optional#empty()} if the game has unlimited undo.
      */
     public Optional<Integer> getUndoQuota() {
-        // TODO
-        return null;
+        if (undoQuota == -1) {
+            return Optional.empty();
+        }
+        else {
+            return Optional.of(undoQuota);
+        }
     }
 
     /**
@@ -149,7 +160,7 @@ public class GameState {
      * @return maximum width.
      */
     public int getMapMaxWidth() {
-        return maxMapWidth;
+        return gameMap.getMaxWidth();
     }
 
     /**
@@ -159,6 +170,6 @@ public class GameState {
      * @return maximum height.
      */
     public int getMapMaxHeight() {
-        return maxMapHeight;
+        return gameMap.getMaxHeight();
     }
 }

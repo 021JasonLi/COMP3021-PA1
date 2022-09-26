@@ -1,9 +1,12 @@
 package hk.ust.comp3021.tui;
 
 
+import hk.ust.comp3021.actions.Action;
+import hk.ust.comp3021.actions.ActionResult;
 import hk.ust.comp3021.entities.Player;
 import hk.ust.comp3021.game.*;
 import hk.ust.comp3021.utils.NotImplementedException;
+import hk.ust.comp3021.utils.StringResources;
 
 /**
  * A Sokoban game running in the terminal.
@@ -45,6 +48,35 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
     @Override
     public void run() {
         // TODO
+        renderingEngine.message(StringResources.GAME_READY_MESSAGE);
 
+        do { // game loop
+            renderingEngine.render(state);
+            renderingEngine.message("");
+            if (state.getUndoQuota().isEmpty()) { // unlimited undo quota
+                renderingEngine.message(String.format(StringResources.UNDO_QUOTA_TEMPLATE, StringResources.UNDO_QUOTA_UNLIMITED));
+            }
+            else { // limited undo quota
+                renderingEngine.message(String.format(StringResources.UNDO_QUOTA_TEMPLATE, state.getUndoQuota().get()));
+            }
+            renderingEngine.message(">>>");
+            Action action = inputEngine.fetchAction();
+            ActionResult result = processAction(action);
+
+
+        } while (!shouldStop());
+
+
+        // end of game
+        if (state.isWin()) { // win the game
+            renderingEngine.render(state);
+            renderingEngine.message("");
+            renderingEngine.message(StringResources.WIN_MESSAGE);
+        }
+        else  { // exit the game
+            renderingEngine.render(state);
+            renderingEngine.message("");
+            renderingEngine.message(StringResources.GAME_EXIT_MESSAGE);
+        }
     }
 }

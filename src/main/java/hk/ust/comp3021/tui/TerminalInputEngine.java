@@ -1,8 +1,9 @@
 package hk.ust.comp3021.tui;
 
-import hk.ust.comp3021.actions.Action;
+import hk.ust.comp3021.actions.*;
 import hk.ust.comp3021.game.InputEngine;
 import hk.ust.comp3021.utils.NotImplementedException;
+import hk.ust.comp3021.utils.StringResources;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
@@ -35,8 +36,32 @@ public class TerminalInputEngine implements InputEngine {
         // This is an example showing how to read a line from the Scanner class.
         // Feel free to change it if you do not like it.
         final var inputLine = terminalScanner.nextLine();
+        var inputLineUP = inputLine.toUpperCase();
 
-        // TODO
-        return null;
+        switch (inputLineUP) {
+            case "W": // player A move up
+                return new Move.Up(0);
+            case "A": // player A move left
+                return new Move.Left(0);
+            case "S": // player A move down
+                return new Move.Down(0);
+            case "D": // player A move right
+                return new Move.Right(0);
+            case "K": // player B move up
+                return new Move.Up(1);
+            case "H": // player B move left
+                return new Move.Left(1);
+            case "J": // player B move down
+                return new Move.Down(1);
+            case "L": // player B move down
+                return new Move.Down(1);
+            case "U": // undo
+                return new Undo(-1);
+            case "EXIT": // exit
+                return new Exit(-1);
+            default: // invalid
+                return new InvalidInput(-1, StringResources.INVALID_INPUT_MESSAGE);
+
+        }
     }
 }

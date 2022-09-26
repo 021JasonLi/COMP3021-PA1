@@ -11,6 +11,7 @@ import hk.ust.comp3021.utils.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintStream;
+import java.util.Set;
 
 /**
  * A rendering engine that prints to the terminal.
@@ -33,11 +34,10 @@ public class TerminalRenderingEngine implements RenderingEngine {
             for (int x = 0; x < state.getMapMaxWidth(); x++) {
                 final var entity = state.getEntity(Position.of(x, y));
                 final var charToPrint = switch (entity) {
-                    // TODO
-//                    case Wall ignored -> throw new NotImplementedException();
-//                    case Box b -> throw new NotImplementedException();
-//                    case Player p -> throw new NotImplementedException();
-//                    case Empty ignored -> throw new NotImplementedException();
+                    case Wall ignored -> '#';
+                    case Box b -> Character.toString((char)b.getPlayerId()+97);
+                    case Player p -> Character.toString((char)p.getId()+65);
+                    case Empty ignored -> emptyOrDes(new Position(x, y), state);
                     case null -> ' ';
                     default -> ' ';
                 };
@@ -48,10 +48,18 @@ public class TerminalRenderingEngine implements RenderingEngine {
         outputSteam.print(builder);
     }
 
+    private char emptyOrDes(Position position, GameState state) {
+        Set<Position> desPosition = state.getDestinations();
+        if (desPosition.contains(position)) {
+            return '@';
+        }
+        return '.';
+    }
+
     @Override
     public void message(@NotNull String content) {
-        // TODO
         // Hint: System.out is also a PrintStream.
+        System.out.println(content);
 
     }
 }
