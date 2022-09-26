@@ -8,9 +8,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.swing.text.html.Option;
 import java.io.FileInputStream;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A Sokoban game board.
@@ -25,12 +23,14 @@ import java.util.Set;
 public class GameMap {
     private int maxWidth;
     private int maxHeight;
+    private Set<Position> walls;
     private Set<Position> destinations;
+    private Map<Position, Character> boxLocations;
+    private Map<Character, Position> playerLocations;
     private Optional<Integer> undoLimit;
-    private static Set<Integer> playerIDs = new HashSet<Integer>();
-    private static Entity[][] EntityArray;
-    public static String[] mapTextSplited;
-//    public static int undoQuota;
+    private static Set<Integer> playerIDs = new HashSet<Integer>(); // ?
+    static Entity[][] EntityArray;
+    private static String[] mapTextSplited;
 
 
     /**
@@ -49,8 +49,9 @@ public class GameMap {
         this.maxHeight = maxHeight;
         this.destinations = destinations;
         this.undoLimit = undoLimit;
-
-//        undoQuota = undoLimit.get();
+        this.walls = new HashSet<Position>();
+        this.boxLocations = new HashMap<>();
+        this.playerLocations = new HashMap<>();
 
         // put all the entities into the array
         EntityArray = new Entity[maxHeight][maxWidth];
@@ -64,16 +65,19 @@ public class GameMap {
             for (int j = 0; j < mapTextSplited[i+1].length(); j++)  {
                 char temp = mapTextSplited[i+1].charAt(j); // get the character
                 if ((temp >= 'A') && (temp <= 'Z')) { // finding player entity
-                    putEntity(new Position(i, j), new Player(temp-65));
+                    playerLocations.put(temp, new Position(j, i));
+                    putEntity(new Position(j, i), new Player(temp-65));
                 }
                 else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
-                    putEntity(new Position(i, j), new Box(temp-97));
+                    boxLocations.put(new Position(j, i), temp);
+                    putEntity(new Position(j, i), new Box(temp-97));
                 }
                 else if (temp == '#') { // finding wall entity
-                    putEntity(new Position(i, j), new Wall());
+                    walls.add(new Position(j, i));
+                    putEntity(new Position(j, i), new Wall());
                 }
                 else if ((temp == '.') || (temp == '@')){ // finding empty entity
-                    putEntity(new Position(i, j), new Empty());
+                    putEntity(new Position(j, i), new Empty());
                 }
             }
         }
@@ -215,7 +219,7 @@ public class GameMap {
      * @param entity   the entity to put into game map.
      */
     public void putEntity(Position position, Entity entity) {
-        EntityArray[position.x()][position.y()] = entity;
+        EntityArray[position.y()][position.x()] = entity;
     }
 
     /**

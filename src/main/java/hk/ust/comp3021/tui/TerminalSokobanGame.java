@@ -3,6 +3,8 @@ package hk.ust.comp3021.tui;
 
 import hk.ust.comp3021.actions.Action;
 import hk.ust.comp3021.actions.ActionResult;
+import hk.ust.comp3021.actions.Exit;
+import hk.ust.comp3021.actions.InvalidInput;
 import hk.ust.comp3021.entities.Player;
 import hk.ust.comp3021.game.*;
 import hk.ust.comp3021.utils.NotImplementedException;
@@ -35,7 +37,7 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
         int numOfPlayers = 0;
         for (int i = 0; i < gameState.getMapMaxHeight(); i++) {
             for (int j = 0; j < gameState.getMapMaxWidth(); j++) {
-                if (gameState.getEntity(new Position(j ,i)) instanceof Player) {
+                if (gameState.getEntity(new Position(j, i)) instanceof Player) {
                     numOfPlayers++;
                 }
             }
@@ -63,7 +65,12 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
             Action action = inputEngine.fetchAction();
             ActionResult result = processAction(action);
 
-
+            if ((action instanceof InvalidInput) && (result instanceof ActionResult.Success)) {
+                renderingEngine.message(((InvalidInput)action).getMessage());
+            }
+            else if ((action instanceof Exit) && (result instanceof ActionResult.Success)) {
+                break;
+            }
         } while (!shouldStop());
 
 

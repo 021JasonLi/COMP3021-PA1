@@ -59,7 +59,7 @@ public class TerminalRenderingEngine implements RenderingEngine {
     @Override
     public void message(@NotNull String content) {
         // Hint: System.out is also a PrintStream.
-        System.out.println(content);
+        outputSteam.println(content);
 
     }
 }

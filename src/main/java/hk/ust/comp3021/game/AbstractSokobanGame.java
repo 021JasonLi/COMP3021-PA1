@@ -1,7 +1,7 @@
 package hk.ust.comp3021.game;
 
-import hk.ust.comp3021.actions.Action;
-import hk.ust.comp3021.actions.ActionResult;
+import com.sun.net.httpserver.Authenticator;
+import hk.ust.comp3021.actions.*;
 import hk.ust.comp3021.utils.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,11 +21,9 @@ public abstract class AbstractSokobanGame implements SokobanGame {
      * For example when the user specified to exit the game or the user won the game.
      */
     protected boolean shouldStop() {
-        // TODO
-        if (state.isWin()) {
+        if (state.isWin()) { // exit condition handle outside
             return true;
         }
-        
         return false;
     }
 
@@ -35,6 +33,27 @@ public abstract class AbstractSokobanGame implements SokobanGame {
      */
     protected ActionResult processAction(@NotNull Action action) {
         // TODO
+        if  (action instanceof Exit) {
+            return new ActionResult.Success(action);
+        }
+        else if (action instanceof InvalidInput) {
+            return new ActionResult.Success(action);
+        }
+        else if (action instanceof Move.Up) {
+
+        }
+        else if (action instanceof Move.Down) {
+
+        }
+        else if (action instanceof Move.Left)  {
+
+        }
+        else if (action instanceof Move.Right) {
+
+        }
+        else { // undo
+
+        }
 
         return null;
     }

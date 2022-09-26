@@ -1,6 +1,8 @@
 package hk.ust.comp3021.game;
 
+import hk.ust.comp3021.actions.Action;
 import hk.ust.comp3021.entities.Box;
+import hk.ust.comp3021.entities.Empty;
 import hk.ust.comp3021.entities.Entity;
 import hk.ust.comp3021.entities.Player;
 import hk.ust.comp3021.utils.NotImplementedException;
@@ -8,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The state of the Sokoban Game.
@@ -26,9 +27,9 @@ import java.util.Set;
  */
 public class GameState {
     private GameMap gameMap;
-    private Set<Position> boxPosition;
-    private Set<Position> playerPosition;
-    // move history?
+    private Map<Position, Character> currentBoxLocations;
+    private Map<Character, Position> currentPlayerLocations;
+    private Stack<Action> moveHistory;
     private int undoQuota;
 
 
@@ -38,12 +39,24 @@ public class GameState {
      * @param map the game map from which to create this game state.
      */
     public GameState(@NotNull GameMap map) {
-        // TODO
-        gameMap = map;
-        undoQuota = map.getUndoLimit().get();
+        this.gameMap = map;
+        this.currentBoxLocations = new HashMap<>();
+        this.currentPlayerLocations = new HashMap<>();
+        this.moveHistory = new Stack<>();
+        this.undoQuota = map.getUndoLimit().get();
 
-
-
+        // all the current locations come from GameMap at first
+        for (int i = 0; i < getMapMaxHeight(); i++) {
+            for (int j = 0; j < getMapMaxWidth(); j++)  {
+                Entity entity = map.getEntity(new Position(j, i));
+                if (entity instanceof Box) {
+                    currentBoxLocations.put(new Position(j, i), (char)(((Box)entity).getPlayerId()+97));
+                }
+                else if (entity instanceof Player) {
+                    currentPlayerLocations.put((char)(((Player)entity).getId()+65), new Position(j, i));
+                }
+            }
+        }
 
     }
 
@@ -54,7 +67,10 @@ public class GameState {
      * @return the current position of the player.
      */
     public @Nullable Position getPlayerPositionById(int id) {
-        // TODO
+        Character key = (char)(id+65);
+        if (currentPlayerLocations.containsKey(key)) {
+            return currentPlayerLocations.get(key);
+        }
         return null;
     }
 
@@ -64,8 +80,14 @@ public class GameState {
      * @return a set of positions of all players.
      */
     public @NotNull Set<Position> getAllPlayerPositions() {
-        // TODO
-        return null;
+        Set<Position> allPositions = new HashSet<>();
+        for (int i = 0; i < 26; i++) {
+            Character key = (char)(i+65);
+            if (currentPlayerLocations.containsKey(key)) {
+                allPositions.add(currentPlayerLocations.get(key));
+            }
+        }
+        return allPositions;
     }
 
     /**
@@ -75,7 +97,7 @@ public class GameState {
      * @return the entity object.
      */
     public @Nullable Entity getEntity(@NotNull Position position) {
-        return gameMap.getEntity(position);
+        return gameMap.EntityArray[position.y()][position.x()];
     }
 
     /**
@@ -112,6 +134,7 @@ public class GameState {
      */
     public boolean isWin() {
         // TODO
+
         return false;
     }
 
@@ -125,7 +148,8 @@ public class GameState {
      */
     public void move(Position from, Position to) {
         // TODO
-
+        GameMap.EntityArray[to.y()][to.x()] = GameMap.EntityArray[from.y()][from.x()];
+        GameMap.EntityArray[from.y()][from.x()] = new Empty();
     }
 
     /**
