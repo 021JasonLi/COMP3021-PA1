@@ -54,7 +54,7 @@ public class TerminalInputEngine implements InputEngine {
             case "J": // player B move down
                 return new Move.Down(1);
             case "L": // player B move down
-                return new Move.Down(1);
+                return new Move.Right(1);
             case "U": // undo
                 return new Undo(-1);
             case "EXIT": // exit

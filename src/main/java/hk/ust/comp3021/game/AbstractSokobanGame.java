@@ -1,8 +1,9 @@
 package hk.ust.comp3021.game;
 
-import com.sun.net.httpserver.Authenticator;
 import hk.ust.comp3021.actions.*;
+import hk.ust.comp3021.entities.*;
 import hk.ust.comp3021.utils.NotImplementedException;
+import hk.ust.comp3021.utils.StringResources;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,18 +40,163 @@ public abstract class AbstractSokobanGame implements SokobanGame {
         else if (action instanceof InvalidInput) {
             return new ActionResult.Success(action);
         }
+
         else if (action instanceof Move.Up) {
+            // does player exist?
+            Position position = state.getPlayerPositionById(action.getInitiator());
+            if (position == null) {
+                return new ActionResult.Failed(action, StringResources.PLAYER_NOT_FOUND);
+            }
 
+            // check upper location
+            // case 1: Box
+            if (state.getEntity(new Position(position.x(), position.y()-1)) instanceof Box) {
+                int id = ((Box)state.getEntity(new Position(position.x(), position.y()-1))).getPlayerId();
+                // does the box belongs to you?
+                if (id == action.getInitiator()) { // further check the upper position
+                    // moveable only when there is empty
+                    if (state.getEntity(new Position(position.x(), position.y()-2)) instanceof Empty) {
+                        return new ActionResult.Success(action);
+                    }
+                    else {
+                        return new ActionResult.Failed(action, "Failed to push the box.");
+                    }
+                }
+                else {
+                    return new ActionResult.Failed(action, "You cannot move other players' boxes.");
+                }
+            }
+            // case 2: Wall
+            else if (state.getEntity(new Position(position.x(), position.y()-1)) instanceof Wall) {
+                return new ActionResult.Failed(action, "You hit a wall.");
+            }
+            // case 3: Player
+            else if (state.getEntity(new Position(position.x(), position.y()-1)) instanceof Player) {
+                return new ActionResult.Failed(action, "You hit another player.");
+            }
+            // case 4: Empty
+            else  {
+                return new ActionResult.Success(action);
+            }
         }
+
         else if (action instanceof Move.Down) {
+            // does player exist?
+            Position position = state.getPlayerPositionById(action.getInitiator());
+            if (position == null) {
+                return new ActionResult.Failed(action, StringResources.PLAYER_NOT_FOUND);
+            }
 
+            // check upper location
+            // case 1: Box
+            if (state.getEntity(new Position(position.x(), position.y()+1)) instanceof Box) {
+                int id = ((Box)state.getEntity(new Position(position.x(), position.y()+1))).getPlayerId();
+                // does the box belongs to you?
+                if (id == action.getInitiator()) { // further check the upper position
+                    // moveable only when there is empty
+                    if (state.getEntity(new Position(position.x(), position.y()+2)) instanceof Empty) {
+                        return new ActionResult.Success(action);
+                    }
+                    else {
+                        return new ActionResult.Failed(action, "Failed to push the box.");
+                    }
+                }
+                else {
+                    return new ActionResult.Failed(action, "You cannot move other players' boxes.");
+                }
+            }
+            // case 2: Wall
+            else if (state.getEntity(new Position(position.x(), position.y()+1)) instanceof Wall) {
+                return new ActionResult.Failed(action, "You hit a wall.");
+            }
+            // case 3: Player
+            else if (state.getEntity(new Position(position.x(), position.y()+1)) instanceof Player) {
+                return new ActionResult.Failed(action, "You hit another player.");
+            }
+            // case 4: Empty
+            else  {
+                return new ActionResult.Success(action);
+            }
         }
+
         else if (action instanceof Move.Left)  {
+            // does player exist?
+            Position position = state.getPlayerPositionById(action.getInitiator());
+            if (position == null) {
+                return new ActionResult.Failed(action, StringResources.PLAYER_NOT_FOUND);
+            }
 
+            // check upper location
+            // case 1: Box
+            if (state.getEntity(new Position(position.x()-1, position.y())) instanceof Box) {
+                int id = ((Box)state.getEntity(new Position(position.x()-1, position.y()))).getPlayerId();
+                // does the box belongs to you?
+                if (id == action.getInitiator()) { // further check the upper position
+                    // moveable only when there is empty
+                    if (state.getEntity(new Position(position.x()-2, position.y())) instanceof Empty) {
+                        return new ActionResult.Success(action);
+                    }
+                    else {
+                        return new ActionResult.Failed(action, "Failed to push the box.");
+                    }
+                }
+                else {
+                    return new ActionResult.Failed(action, "You cannot move other players' boxes.");
+                }
+            }
+            // case 2: Wall
+            else if (state.getEntity(new Position(position.x()-1, position.y())) instanceof Wall) {
+                return new ActionResult.Failed(action, "You hit a wall.");
+            }
+            // case 3: Player
+            else if (state.getEntity(new Position(position.x()-1, position.y())) instanceof Player) {
+                return new ActionResult.Failed(action, "You hit another player.");
+            }
+            // case 4: Empty
+            else  {
+                return new ActionResult.Success(action);
+            }
         }
+
         else if (action instanceof Move.Right) {
+            // does player exist?
+            Position position = state.getPlayerPositionById(action.getInitiator());
+            if (position == null) {
+                return new ActionResult.Failed(action, StringResources.PLAYER_NOT_FOUND);
+            }
 
+            // check upper location
+            // case 1: Box
+            if (state.getEntity(new Position(position.x()+1, position.y())) instanceof Box) {
+                int id = ((Box)state.getEntity(new Position(position.x()+1, position.y()))).getPlayerId();
+                // does the box belongs to you?
+                if (id == action.getInitiator()) { // further check the upper position
+                    // moveable only when there is empty
+                    if (state.getEntity(new Position(position.x()+2, position.y())) instanceof Empty) {
+                        return new ActionResult.Success(action);
+                    }
+                    else {
+                        return new ActionResult.Failed(action, "Failed to push the box.");
+                    }
+                }
+                else {
+                    return new ActionResult.Failed(action, "You cannot move other players' boxes.");
+                }
+            }
+            // case 2: Wall
+            else if (state.getEntity(new Position(position.x()+1, position.y())) instanceof Wall) {
+                return new ActionResult.Failed(action, "You hit a wall.");
+            }
+            // case 3: Player
+            else if (state.getEntity(new Position(position.x()+1, position.y())) instanceof Player) {
+                return new ActionResult.Failed(action, "You hit another player.");
+            }
+            // case 4: Empty
+            else  {
+                return new ActionResult.Success(action);
+            }
         }
+
         else { // undo
 
         }

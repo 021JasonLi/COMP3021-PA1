@@ -1,10 +1,8 @@
 package hk.ust.comp3021.tui;
 
 
-import hk.ust.comp3021.actions.Action;
-import hk.ust.comp3021.actions.ActionResult;
-import hk.ust.comp3021.actions.Exit;
-import hk.ust.comp3021.actions.InvalidInput;
+import hk.ust.comp3021.actions.*;
+import hk.ust.comp3021.entities.Box;
 import hk.ust.comp3021.entities.Player;
 import hk.ust.comp3021.game.*;
 import hk.ust.comp3021.utils.NotImplementedException;
@@ -62,15 +60,72 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
                 renderingEngine.message(String.format(StringResources.UNDO_QUOTA_TEMPLATE, state.getUndoQuota().get()));
             }
             renderingEngine.message(">>>");
-            Action action = inputEngine.fetchAction();
-            ActionResult result = processAction(action);
+            Action action = inputEngine.fetchAction(); // get the action
+            ActionResult result = processAction(action); // process the action
 
-            if ((action instanceof InvalidInput) && (result instanceof ActionResult.Success)) {
+            // if fail to process, give message; if success, process
+            if (result instanceof ActionResult.Failed) {
+                renderingEngine.message(((ActionResult.Failed)result).getReason());
+            }
+            else if (action instanceof InvalidInput) {
                 renderingEngine.message(((InvalidInput)action).getMessage());
             }
-            else if ((action instanceof Exit) && (result instanceof ActionResult.Success)) {
-                break;
+            else if (action instanceof Exit) {
+                break; // leave the game loop
             }
+            else if (action instanceof Move.Up) {
+                state.checkpoint(); // record the checkpoint for undo use
+                int id = action.getInitiator();
+                Position position = state.getPlayerPositionById(id);
+                // check there is a box to move
+                if (state.getEntity(new Position(position.x(), position.y()-1)) instanceof Box) {
+                    // move the box
+                    state.move(new Position(position.x(), position.y()-1), new Position(position.x(), position.y()-2));
+                }
+                // move the player
+                state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()-1));
+            }
+            else if (action instanceof Move.Down) {
+                state.checkpoint(); // record the checkpoint for undo use
+                int id = action.getInitiator();
+                Position position = state.getPlayerPositionById(id);
+                // check there is a box to move
+                if (state.getEntity(new Position(position.x(), position.y()+1)) instanceof Box) {
+                    // move the box
+                    state.move(new Position(position.x(), position.y()+1), new Position(position.x(), position.y()+2));
+                }
+                // move the player
+                state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()+1));
+            }
+            else if (action instanceof Move.Left) {
+                state.checkpoint(); // record the checkpoint for undo use
+                int id = action.getInitiator();
+                Position position = state.getPlayerPositionById(id);
+                // check there is a box to move
+                if (state.getEntity(new Position(position.x()-1, position.y())) instanceof Box) {
+                    // move the box
+                    state.move(new Position(position.x()-1, position.y()), new Position(position.x()-2, position.y()));
+                }
+                // move the player
+                state.move(new Position(position.x(), position.y()), new Position(position.x()-1, position.y()));
+            }
+            else if (action instanceof Move.Right) {
+                state.checkpoint(); // record the checkpoint for undo use
+                int id = action.getInitiator();
+                Position position = state.getPlayerPositionById(id);
+                // check there is a box to move
+                if (state.getEntity(new Position(position.x()+1, position.y())) instanceof Box) {
+                    // move the box
+                    state.move(new Position(position.x()+1, position.y()), new Position(position.x()+2, position.y()));
+                }
+                // move the player
+                state.move(new Position(position.x(), position.y()), new Position(position.x()+1, position.y()));
+            }
+            else { // Undo
+
+            }
+
+
         } while (!shouldStop());
 
 

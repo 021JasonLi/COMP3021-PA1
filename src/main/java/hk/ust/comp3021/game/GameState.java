@@ -133,9 +133,17 @@ public class GameState {
      * @return true is the game wins.
      */
     public boolean isWin() {
-        // TODO
-
-        return false;
+        for (int i = 0; i < getMapMaxHeight(); i++) {
+            for (int j = 0; j < getMapMaxWidth(); j++) {
+                // if there is a box not in box des. -> not winning
+                Entity entity = getEntity(new Position(j, i));
+                if ((entity instanceof Box) && (!getDestinations().contains(new Position(j, i)))) {
+                    return false;
+                }
+            }
+        }
+        // if all boxes in the box des. -> win
+        return true;
     }
 
     /**
@@ -147,7 +155,20 @@ public class GameState {
      * @param to   The position to move the entity to.
      */
     public void move(Position from, Position to) {
-        // TODO
+        Entity entity = getEntity(from);
+        if (entity instanceof Player) {
+            int id = ((Player)entity).getId();
+            char charID = (char)(id+65);
+            currentPlayerLocations.remove(charID);
+            currentPlayerLocations.put(charID, new Position(to.x(), to.y()));
+        }
+        else if (entity instanceof Box) {
+            int id = ((Box)entity).getPlayerId();
+            char charID = (char)(id+97);
+            currentBoxLocations.remove(from);
+            currentBoxLocations.put(to, charID);
+
+        }
         GameMap.EntityArray[to.y()][to.x()] = GameMap.EntityArray[from.y()][from.x()];
         GameMap.EntityArray[from.y()][from.x()] = new Empty();
     }
