@@ -28,7 +28,7 @@ public class GameMap {
     private Map<Position, Character> boxLocations;
     private Map<Character, Position> playerLocations;
     private Optional<Integer> undoLimit;
-    private static Set<Integer> playerIDs = new HashSet<Integer>(); // ?
+    private static Set<Integer> playerIDs = new HashSet<Integer>();
     static Entity[][] EntityArray;
     private static String[] mapTextSplited;
 

@@ -47,7 +47,6 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
 
     @Override
     public void run() {
-        // TODO
         renderingEngine.message(StringResources.GAME_READY_MESSAGE);
 
         do { // game loop
@@ -73,57 +72,10 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
             else if (action instanceof Exit) {
                 break; // leave the game loop
             }
-            else if (action instanceof Move.Up) {
-                state.checkpoint(); // record the checkpoint for undo use
-                int id = action.getInitiator();
-                Position position = state.getPlayerPositionById(id);
-                // check there is a box to move
-                if (state.getEntity(new Position(position.x(), position.y()-1)) instanceof Box) {
-                    // move the box
-                    state.move(new Position(position.x(), position.y()-1), new Position(position.x(), position.y()-2));
-                }
-                // move the player
-                state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()-1));
+            else if (action instanceof Undo) {
+                state.undo();
             }
-            else if (action instanceof Move.Down) {
-                state.checkpoint(); // record the checkpoint for undo use
-                int id = action.getInitiator();
-                Position position = state.getPlayerPositionById(id);
-                // check there is a box to move
-                if (state.getEntity(new Position(position.x(), position.y()+1)) instanceof Box) {
-                    // move the box
-                    state.move(new Position(position.x(), position.y()+1), new Position(position.x(), position.y()+2));
-                }
-                // move the player
-                state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()+1));
-            }
-            else if (action instanceof Move.Left) {
-                state.checkpoint(); // record the checkpoint for undo use
-                int id = action.getInitiator();
-                Position position = state.getPlayerPositionById(id);
-                // check there is a box to move
-                if (state.getEntity(new Position(position.x()-1, position.y())) instanceof Box) {
-                    // move the box
-                    state.move(new Position(position.x()-1, position.y()), new Position(position.x()-2, position.y()));
-                }
-                // move the player
-                state.move(new Position(position.x(), position.y()), new Position(position.x()-1, position.y()));
-            }
-            else if (action instanceof Move.Right) {
-                state.checkpoint(); // record the checkpoint for undo use
-                int id = action.getInitiator();
-                Position position = state.getPlayerPositionById(id);
-                // check there is a box to move
-                if (state.getEntity(new Position(position.x()+1, position.y())) instanceof Box) {
-                    // move the box
-                    state.move(new Position(position.x()+1, position.y()), new Position(position.x()+2, position.y()));
-                }
-                // move the player
-                state.move(new Position(position.x(), position.y()), new Position(position.x()+1, position.y()));
-            }
-            else { // Undo
-
-            }
+            // ignore Move since handled in AbstractSokobanGame::processAction
 
 
         } while (!shouldStop());

@@ -1,10 +1,7 @@
 package hk.ust.comp3021.game;
 
 import hk.ust.comp3021.actions.Action;
-import hk.ust.comp3021.entities.Box;
-import hk.ust.comp3021.entities.Empty;
-import hk.ust.comp3021.entities.Entity;
-import hk.ust.comp3021.entities.Player;
+import hk.ust.comp3021.entities.*;
 import hk.ust.comp3021.utils.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +26,7 @@ public class GameState {
     private GameMap gameMap;
     private Map<Position, Character> currentBoxLocations;
     private Map<Character, Position> currentPlayerLocations;
-    private Stack<Action> moveHistory;
+    private Stack<Entity[][]> moveHistoryOfEntity;
     private int undoQuota;
 
 
@@ -42,7 +39,7 @@ public class GameState {
         this.gameMap = map;
         this.currentBoxLocations = new HashMap<>();
         this.currentPlayerLocations = new HashMap<>();
-        this.moveHistory = new Stack<>();
+        this.moveHistoryOfEntity = new Stack<>();
         this.undoQuota = map.getUndoLimit().get();
 
         // all the current locations come from GameMap at first
@@ -57,6 +54,7 @@ public class GameState {
                 }
             }
         }
+        moveHistoryOfEntity.push(gameMap.EntityArray); // push the initial state
 
     }
 
@@ -182,8 +180,29 @@ public class GameState {
      * Every undo actions reverts the game state to the last checkpoint.
      */
     public void checkpoint() {
-        // TODO
-
+        // perform deep copy to store the current state
+        Entity[][] EntityArrayCheckpoint = new Entity[getMapMaxHeight()][getMapMaxWidth()];
+        for (int i = 0; i < EntityArrayCheckpoint.length; i++) {
+            for (int j = 0; j < EntityArrayCheckpoint[0].length; j++) {
+                Entity entity = getEntity(new Position(j, i));
+                if (entity instanceof Player) {
+                    EntityArrayCheckpoint[i][j] = new Player(((Player)entity).getId());
+                }
+                else if (entity instanceof Box) {
+                    EntityArrayCheckpoint[i][j] = new Box(((Box)entity).getPlayerId());
+                }
+                else if (entity instanceof Wall) {
+                    EntityArrayCheckpoint[i][j] = new Wall();
+                }
+                else if (entity instanceof Empty) {
+                    EntityArrayCheckpoint[i][j] = new Empty();
+                }
+                else { // outside the wall
+                    EntityArrayCheckpoint[i][j] = null;
+                }
+            }
+        }
+        moveHistoryOfEntity.push(EntityArrayCheckpoint);
     }
 
     /**
@@ -194,8 +213,40 @@ public class GameState {
      * revert to the initial game state.
      */
     public void undo() {
-        // TODO
+        if (!moveHistoryOfEntity.empty()) { // there is a checkpoint other than the initial one
+            // perform deep copy to get back previous state
+            Entity[][] EntityArrayCheckpoint = moveHistoryOfEntity.pop(); // get the last move and pop
+            for (int i = 0; i < EntityArrayCheckpoint.length; i++) {
+                for (int j = 0; j < EntityArrayCheckpoint[0].length; j++) {
+                    Entity entity = EntityArrayCheckpoint[i][j];
+                    if (entity instanceof Player) {
+                        int id = ((Player) entity).getId();
+                        char charID = (char) (id + 65);
+                        gameMap.EntityArray[i][j] = new Player(id);
+                        currentPlayerLocations.remove(charID);
+                        currentPlayerLocations.put(charID, new Position(j, i));
+                        System.out.println(getPlayerPositionById(0));
+                    } else if (entity instanceof Box) {
+                        int id = ((Box) entity).getPlayerId();
+                        char charID = (char) (id + 97);
+                        gameMap.EntityArray[i][j] = new Box(id);
+                        currentBoxLocations.remove(new Position(j, i));
+                        currentBoxLocations.put(new Position(j, i), charID);
+                    } else if (entity instanceof Wall) {
+                        gameMap.EntityArray[i][j] = new Wall();
+                    } else if (entity instanceof Empty) {
+                        gameMap.EntityArray[i][j] = new Empty();
+                    } else { // outside the wall
+                        gameMap.EntityArray[i][j] = null;
+                    }
+                }
+            }
 
+
+            if (undoQuota != -1) {
+                undoQuota--;
+            }
+        }
     }
 
     /**

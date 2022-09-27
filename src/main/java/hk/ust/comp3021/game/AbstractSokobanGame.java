@@ -6,6 +6,8 @@ import hk.ust.comp3021.utils.NotImplementedException;
 import hk.ust.comp3021.utils.StringResources;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 /**
  * A base implementation of Sokoban Game.
  */
@@ -33,7 +35,6 @@ public abstract class AbstractSokobanGame implements SokobanGame {
      * @return The result of the action.
      */
     protected ActionResult processAction(@NotNull Action action) {
-        // TODO
         if  (action instanceof Exit) {
             return new ActionResult.Success(action);
         }
@@ -56,6 +57,9 @@ public abstract class AbstractSokobanGame implements SokobanGame {
                 if (id == action.getInitiator()) { // further check the upper position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x(), position.y()-2)) instanceof Empty) {
+                        state.checkpoint();
+                        state.move(new Position(position.x(), position.y()-1), new Position(position.x(), position.y()-2));
+                        state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()-1));
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -76,6 +80,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
+                state.checkpoint();
+                state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()-1));
                 return new ActionResult.Success(action);
             }
         }
@@ -92,9 +98,12 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             if (state.getEntity(new Position(position.x(), position.y()+1)) instanceof Box) {
                 int id = ((Box)state.getEntity(new Position(position.x(), position.y()+1))).getPlayerId();
                 // does the box belongs to you?
-                if (id == action.getInitiator()) { // further check the upper position
+                if (id == action.getInitiator()) { // further check the lower position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x(), position.y()+2)) instanceof Empty) {
+                        state.checkpoint();
+                        state.move(new Position(position.x(), position.y()+1), new Position(position.x(), position.y()+2));
+                        state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()+1));
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -115,6 +124,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
+                state.checkpoint();
+                state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()+1));
                 return new ActionResult.Success(action);
             }
         }
@@ -131,9 +142,12 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             if (state.getEntity(new Position(position.x()-1, position.y())) instanceof Box) {
                 int id = ((Box)state.getEntity(new Position(position.x()-1, position.y()))).getPlayerId();
                 // does the box belongs to you?
-                if (id == action.getInitiator()) { // further check the upper position
+                if (id == action.getInitiator()) { // further check the left position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x()-2, position.y())) instanceof Empty) {
+                        state.checkpoint();
+                        state.move(new Position(position.x()-1, position.y()), new Position(position.x()-2, position.y()));
+                        state.move(new Position(position.x(), position.y()), new Position(position.x()-1, position.y()));
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -154,6 +168,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
+                state.checkpoint();
+                state.move(new Position(position.x(), position.y()), new Position(position.x()-1, position.y()));
                 return new ActionResult.Success(action);
             }
         }
@@ -170,9 +186,12 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             if (state.getEntity(new Position(position.x()+1, position.y())) instanceof Box) {
                 int id = ((Box)state.getEntity(new Position(position.x()+1, position.y()))).getPlayerId();
                 // does the box belongs to you?
-                if (id == action.getInitiator()) { // further check the upper position
+                if (id == action.getInitiator()) { // further check the right position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x()+2, position.y())) instanceof Empty) {
+                        state.checkpoint();
+                        state.move(new Position(position.x()+1, position.y()), new Position(position.x()+2, position.y()));
+                        state.move(new Position(position.x(), position.y()), new Position(position.x()+1, position.y()));
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -193,14 +212,26 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
+                state.checkpoint();
+                state.move(new Position(position.x(), position.y()), new Position(position.x()+1, position.y()));
                 return new ActionResult.Success(action);
             }
         }
 
         else { // undo
-
+            Optional<Integer> undoQuota = state.getUndoQuota();
+            if (undoQuota.isPresent()) { // limited quota
+                if (undoQuota.get() == 0) { // 0 quota left -> cannot undo anymore
+                    return new ActionResult.Failed(action, StringResources.UNDO_QUOTA_RUN_OUT);
+                }
+                else  { // quota > 0 -> can undo
+                    return new ActionResult.Success(action);
+                }
+            }
+            else  { // unlimited quota
+                return new ActionResult.Success(action);
+            }
         }
-
-        return null;
     }
+
 }
