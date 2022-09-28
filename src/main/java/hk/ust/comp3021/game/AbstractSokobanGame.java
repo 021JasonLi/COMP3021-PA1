@@ -57,9 +57,9 @@ public abstract class AbstractSokobanGame implements SokobanGame {
                 if (id == action.getInitiator()) { // further check the upper position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x(), position.y()-2)) instanceof Empty) {
-                        state.checkpoint();
                         state.move(new Position(position.x(), position.y()-1), new Position(position.x(), position.y()-2));
                         state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()-1));
+                        state.checkpoint();
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -80,8 +80,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
-                state.checkpoint();
                 state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()-1));
+                state.checkpoint();
                 return new ActionResult.Success(action);
             }
         }
@@ -101,9 +101,9 @@ public abstract class AbstractSokobanGame implements SokobanGame {
                 if (id == action.getInitiator()) { // further check the lower position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x(), position.y()+2)) instanceof Empty) {
-                        state.checkpoint();
                         state.move(new Position(position.x(), position.y()+1), new Position(position.x(), position.y()+2));
                         state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()+1));
+                        state.checkpoint();
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -124,8 +124,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
-                state.checkpoint();
                 state.move(new Position(position.x(), position.y()), new Position(position.x(), position.y()+1));
+                state.checkpoint();
                 return new ActionResult.Success(action);
             }
         }
@@ -145,9 +145,9 @@ public abstract class AbstractSokobanGame implements SokobanGame {
                 if (id == action.getInitiator()) { // further check the left position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x()-2, position.y())) instanceof Empty) {
-                        state.checkpoint();
                         state.move(new Position(position.x()-1, position.y()), new Position(position.x()-2, position.y()));
                         state.move(new Position(position.x(), position.y()), new Position(position.x()-1, position.y()));
+                        state.checkpoint();
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -168,8 +168,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
-                state.checkpoint();
                 state.move(new Position(position.x(), position.y()), new Position(position.x()-1, position.y()));
+                state.checkpoint();
                 return new ActionResult.Success(action);
             }
         }
@@ -189,9 +189,9 @@ public abstract class AbstractSokobanGame implements SokobanGame {
                 if (id == action.getInitiator()) { // further check the right position
                     // moveable only when there is empty
                     if (state.getEntity(new Position(position.x()+2, position.y())) instanceof Empty) {
-                        state.checkpoint();
                         state.move(new Position(position.x()+1, position.y()), new Position(position.x()+2, position.y()));
                         state.move(new Position(position.x(), position.y()), new Position(position.x()+1, position.y()));
+                        state.checkpoint();
                         return new ActionResult.Success(action);
                     }
                     else {
@@ -212,8 +212,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
             }
             // case 4: Empty
             else  {
-                state.checkpoint();
                 state.move(new Position(position.x(), position.y()), new Position(position.x()+1, position.y()));
+                state.checkpoint();
                 return new ActionResult.Success(action);
             }
         }

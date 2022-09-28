@@ -54,8 +54,7 @@ public class GameState {
                 }
             }
         }
-        moveHistoryOfEntity.push(gameMap.EntityArray); // push the initial state
-
+        checkpoint(); // record the init state
     }
 
     /**
@@ -213,9 +212,10 @@ public class GameState {
      * revert to the initial game state.
      */
     public void undo() {
-        if (!moveHistoryOfEntity.empty()) { // there is a checkpoint other than the initial one
+        if (moveHistoryOfEntity.size() > 1) { // have move history (not only init state)
+            moveHistoryOfEntity.pop(); // remove the recent move
             // perform deep copy to get back previous state
-            Entity[][] EntityArrayCheckpoint = moveHistoryOfEntity.pop(); // get the last move and pop
+            Entity[][] EntityArrayCheckpoint = moveHistoryOfEntity.peek(); // get the last move
             for (int i = 0; i < EntityArrayCheckpoint.length; i++) {
                 for (int j = 0; j < EntityArrayCheckpoint[0].length; j++) {
                     Entity entity = EntityArrayCheckpoint[i][j];
@@ -241,8 +241,6 @@ public class GameState {
                     }
                 }
             }
-
-
             if (undoQuota != -1) {
                 undoQuota--;
             }
