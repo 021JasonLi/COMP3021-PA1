@@ -1,13 +1,10 @@
 package hk.ust.comp3021.game;
 
 import hk.ust.comp3021.entities.*;
-import hk.ust.comp3021.utils.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.swing.text.html.Option;
-import java.io.FileInputStream;
 import java.util.*;
 
 /**
@@ -29,7 +26,7 @@ public class GameMap {
     private Map<Character, Position> playerLocations;
     private Optional<Integer> undoLimit;
     private static Set<Integer> playerIDs = new HashSet<Integer>();
-    static Entity[][] EntityArray;
+    static Entity[][] entityArray;
     private static String[] mapTextSplited;
 
 
@@ -54,10 +51,10 @@ public class GameMap {
         this.playerLocations = new HashMap<>();
 
         // put all the entities into the array
-        EntityArray = new Entity[maxHeight][maxWidth];
+        entityArray = new Entity[maxHeight][maxWidth];
         for (int i = 0; i < maxHeight; i++) { // set all to null first since the map may be non-rectangle
             for (int j = 0; j < maxWidth; j++) {
-                EntityArray[i][j] = null;
+                entityArray[i][j] = null;
             }
         }
 
@@ -67,16 +64,13 @@ public class GameMap {
                 if ((temp >= 'A') && (temp <= 'Z')) { // finding player entity
                     playerLocations.put(temp, new Position(j, i));
                     putEntity(new Position(j, i), new Player(temp-65));
-                }
-                else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
+                } else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
                     boxLocations.put(new Position(j, i), temp);
                     putEntity(new Position(j, i), new Box(temp-97));
-                }
-                else if (temp == '#') { // finding wall entity
+                } else if (temp == '#') { // finding wall entity
                     walls.add(new Position(j, i));
                     putEntity(new Position(j, i), new Wall());
-                }
-                else if ((temp == '.') || (temp == '@')){ // finding empty entity
+                } else if ((temp == '.') || (temp == '@')){ // finding empty entity
                     putEntity(new Position(j, i), new Empty());
                 }
             }
@@ -151,12 +145,10 @@ public class GameMap {
                     int tempIndex = temp - 65;
                     playerList[tempIndex] += 1; // add 1 to the corresponding box
                     playerIDs.add(tempIndex); // add the playerID to the set
-                }
-                else if ((temp >= 'a') && (temp <= 'z')) { // finding boxes
+                } else if ((temp >= 'a') && (temp <= 'z')) { // finding boxes
                     int tempIndex = temp - 97;
                     boxList[tempIndex] += 1; // add 1 to the corresponding box
-                }
-                else if (temp == '@') { // finding destinations
+                } else if (temp == '@') { // finding destinations
                     numOfdestinations += 1; // add 1 to the variable
                     destinations.add(new Position(j, i-1));
                 }
@@ -209,7 +201,7 @@ public class GameMap {
      */
     @Nullable
     public Entity getEntity(Position position) {
-        return EntityArray[position.y()][position.x()];
+        return entityArray[position.y()][position.x()];
     }
 
     /**
@@ -219,7 +211,7 @@ public class GameMap {
      * @param entity   the entity to put into game map.
      */
     public void putEntity(Position position, Entity entity) {
-        EntityArray[position.y()][position.x()] = entity;
+        entityArray[position.y()][position.x()] = entity;
     }
 
     /**

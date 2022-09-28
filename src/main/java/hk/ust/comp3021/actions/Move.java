@@ -1,7 +1,6 @@
 package hk.ust.comp3021.actions;
 
 import hk.ust.comp3021.game.Position;
-import hk.ust.comp3021.utils.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 /**

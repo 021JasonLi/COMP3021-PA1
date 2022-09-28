@@ -1,8 +1,6 @@
 package hk.ust.comp3021.game;
 
-import hk.ust.comp3021.actions.Action;
 import hk.ust.comp3021.entities.*;
-import hk.ust.comp3021.utils.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -48,8 +46,7 @@ public class GameState {
                 Entity entity = map.getEntity(new Position(j, i));
                 if (entity instanceof Box) {
                     currentBoxLocations.put(new Position(j, i), (char)(((Box)entity).getPlayerId()+97));
-                }
-                else if (entity instanceof Player) {
+                } else if (entity instanceof Player) {
                     currentPlayerLocations.put((char)(((Player)entity).getId()+65), new Position(j, i));
                 }
             }
@@ -94,7 +91,7 @@ public class GameState {
      * @return the entity object.
      */
     public @Nullable Entity getEntity(@NotNull Position position) {
-        return gameMap.EntityArray[position.y()][position.x()];
+        return gameMap.entityArray[position.y()][position.x()];
     }
 
     /**
@@ -117,8 +114,7 @@ public class GameState {
     public Optional<Integer> getUndoQuota() {
         if (undoQuota == -1) {
             return Optional.empty();
-        }
-        else {
+        } else {
             return Optional.of(undoQuota);
         }
     }
@@ -158,16 +154,15 @@ public class GameState {
             char charID = (char)(id+65);
             currentPlayerLocations.remove(charID);
             currentPlayerLocations.put(charID, new Position(to.x(), to.y()));
-        }
-        else if (entity instanceof Box) {
+        } else if (entity instanceof Box) {
             int id = ((Box)entity).getPlayerId();
             char charID = (char)(id+97);
             currentBoxLocations.remove(from);
             currentBoxLocations.put(to, charID);
 
         }
-        GameMap.EntityArray[to.y()][to.x()] = GameMap.EntityArray[from.y()][from.x()];
-        GameMap.EntityArray[from.y()][from.x()] = new Empty();
+        GameMap.entityArray[to.y()][to.x()] = GameMap.entityArray[from.y()][from.x()];
+        GameMap.entityArray[from.y()][from.x()] = new Empty();
     }
 
     /**
@@ -180,28 +175,24 @@ public class GameState {
      */
     public void checkpoint() {
         // perform deep copy to store the current state
-        Entity[][] EntityArrayCheckpoint = new Entity[getMapMaxHeight()][getMapMaxWidth()];
-        for (int i = 0; i < EntityArrayCheckpoint.length; i++) {
-            for (int j = 0; j < EntityArrayCheckpoint[0].length; j++) {
+        Entity[][] entityArrayCheckpoint = new Entity[getMapMaxHeight()][getMapMaxWidth()];
+        for (int i = 0; i < entityArrayCheckpoint.length; i++) {
+            for (int j = 0; j < entityArrayCheckpoint[0].length; j++) {
                 Entity entity = getEntity(new Position(j, i));
                 if (entity instanceof Player) {
-                    EntityArrayCheckpoint[i][j] = new Player(((Player)entity).getId());
-                }
-                else if (entity instanceof Box) {
-                    EntityArrayCheckpoint[i][j] = new Box(((Box)entity).getPlayerId());
-                }
-                else if (entity instanceof Wall) {
-                    EntityArrayCheckpoint[i][j] = new Wall();
-                }
-                else if (entity instanceof Empty) {
-                    EntityArrayCheckpoint[i][j] = new Empty();
-                }
-                else { // outside the wall
-                    EntityArrayCheckpoint[i][j] = null;
+                    entityArrayCheckpoint[i][j] = new Player(((Player)entity).getId());
+                } else if (entity instanceof Box) {
+                    entityArrayCheckpoint[i][j] = new Box(((Box)entity).getPlayerId());
+                } else if (entity instanceof Wall) {
+                    entityArrayCheckpoint[i][j] = new Wall();
+                } else if (entity instanceof Empty) {
+                    entityArrayCheckpoint[i][j] = new Empty();
+                } else { // outside the wall
+                    entityArrayCheckpoint[i][j] = null;
                 }
             }
         }
-        moveHistoryOfEntity.push(EntityArrayCheckpoint);
+        moveHistoryOfEntity.push(entityArrayCheckpoint);
     }
 
     /**
@@ -215,29 +206,28 @@ public class GameState {
         if (moveHistoryOfEntity.size() > 1) { // have move history (not only init state)
             moveHistoryOfEntity.pop(); // remove the recent move
             // perform deep copy to get back previous state
-            Entity[][] EntityArrayCheckpoint = moveHistoryOfEntity.peek(); // get the last move
-            for (int i = 0; i < EntityArrayCheckpoint.length; i++) {
-                for (int j = 0; j < EntityArrayCheckpoint[0].length; j++) {
-                    Entity entity = EntityArrayCheckpoint[i][j];
+            Entity[][] entityArrayCheckpoint = moveHistoryOfEntity.peek(); // get the last move
+            for (int i = 0; i < entityArrayCheckpoint.length; i++) {
+                for (int j = 0; j < entityArrayCheckpoint[0].length; j++) {
+                    Entity entity = entityArrayCheckpoint[i][j];
                     if (entity instanceof Player) {
                         int id = ((Player) entity).getId();
                         char charID = (char) (id + 65);
-                        gameMap.EntityArray[i][j] = new Player(id);
+                        gameMap.entityArray[i][j] = new Player(id);
                         currentPlayerLocations.remove(charID);
                         currentPlayerLocations.put(charID, new Position(j, i));
-                        System.out.println(getPlayerPositionById(0));
                     } else if (entity instanceof Box) {
                         int id = ((Box) entity).getPlayerId();
                         char charID = (char) (id + 97);
-                        gameMap.EntityArray[i][j] = new Box(id);
+                        gameMap.entityArray[i][j] = new Box(id);
                         currentBoxLocations.remove(new Position(j, i));
                         currentBoxLocations.put(new Position(j, i), charID);
                     } else if (entity instanceof Wall) {
-                        gameMap.EntityArray[i][j] = new Wall();
+                        gameMap.entityArray[i][j] = new Wall();
                     } else if (entity instanceof Empty) {
-                        gameMap.EntityArray[i][j] = new Empty();
+                        gameMap.entityArray[i][j] = new Empty();
                     } else { // outside the wall
-                        gameMap.EntityArray[i][j] = null;
+                        gameMap.entityArray[i][j] = null;
                     }
                 }
             }
