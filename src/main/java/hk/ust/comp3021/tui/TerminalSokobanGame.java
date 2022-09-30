@@ -65,7 +65,7 @@ public class TerminalSokobanGame extends AbstractSokobanGame {
             } else if (action instanceof InvalidInput) {
                 renderingEngine.message(((InvalidInput)action).getMessage());
             } else if (action instanceof Exit) {
-                break; // leave the game loop
+                break;
             } else if (action instanceof Undo) {
                 state.undo();
             }

@@ -23,10 +23,7 @@ public abstract class AbstractSokobanGame implements SokobanGame {
      * For example when the user specified to exit the game or the user won the game.
      */
     protected boolean shouldStop() {
-        if (state.isWin()) { // exit condition handle outside
-            return true;
-        }
-        return false;
+        return ((state.isWin()) || (state.getExitCondition()));
     }
 
     /**
@@ -34,7 +31,8 @@ public abstract class AbstractSokobanGame implements SokobanGame {
      * @return The result of the action.
      */
     protected ActionResult processAction(@NotNull Action action) {
-        if  (action instanceof Exit) {
+        if (action instanceof Exit) {
+            state.changeExitCondition();
             return new ActionResult.Success(action);
         } else if (action instanceof InvalidInput) {
             return new ActionResult.Success(action);

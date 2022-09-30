@@ -26,6 +26,7 @@ public class GameState {
     private Map<Character, Position> currentPlayerLocations;
     private Stack<Entity[][]> moveHistoryOfEntity;
     private int undoQuota;
+    private boolean exitCondition;
 
 
     /**
@@ -38,7 +39,13 @@ public class GameState {
         this.currentBoxLocations = new HashMap<>();
         this.currentPlayerLocations = new HashMap<>();
         this.moveHistoryOfEntity = new Stack<>();
-        this.undoQuota = map.getUndoLimit().get();
+        if (map.getUndoLimit().isEmpty()) {
+            this.undoQuota = -1;
+        } else {
+            this.undoQuota = map.getUndoLimit().get();
+        }
+        this.exitCondition = false;
+
 
         // all the current locations come from GameMap at first
         for (int i = 0; i < getMapMaxHeight(); i++) {
@@ -255,5 +262,13 @@ public class GameState {
      */
     public int getMapMaxHeight() {
         return gameMap.getMaxHeight();
+    }
+
+    public void changeExitCondition() {
+        exitCondition = !(exitCondition);
+    }
+
+    public boolean getExitCondition() {
+        return exitCondition;
     }
 }
