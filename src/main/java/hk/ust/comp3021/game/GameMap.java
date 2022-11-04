@@ -41,6 +41,44 @@ public class GameMap {
      *                     0 means undo is not allowed.
      *                     -1 means unlimited. Other negative numbers are not allowed.
      */
+    public GameMap(int maxWidth, int maxHeight, Set<Position> destinations, int undoLimit) {
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
+        this.destinations = destinations;
+        this.undoLimit = Optional.ofNullable(undoLimit);
+        this.walls = new HashSet<Position>();
+        this.boxLocations = new HashMap<>();
+        this.playerLocations = new HashMap<>();
+
+        // put all the entities into the array
+        entityArray = new Entity[maxHeight][maxWidth];
+        for (int i = 0; i < maxHeight; i++) { // set all to null first since the map may be non-rectangle
+            for (int j = 0; j < maxWidth; j++) {
+                entityArray[i][j] = null;
+            }
+        }
+
+        if (mapTextSplited != null) { // if directly call ctor -> no text provided
+            for (int i = 0; i < maxHeight; i++) {
+                for (int j = 0; j < mapTextSplited[i + 1].length(); j++) {
+                    char temp = mapTextSplited[i + 1].charAt(j); // get the character
+                    if ((temp >= 'A') && (temp <= 'Z')) { // finding player entity
+                        playerLocations.put(temp, new Position(j, i));
+                        putEntity(new Position(j, i), new Player(temp - 65));
+                    } else if ((temp >= 'a') && (temp <= 'z')) { // finding box entity
+                        boxLocations.put(new Position(j, i), temp);
+                        putEntity(new Position(j, i), new Box(temp - 97));
+                    } else if (temp == '#') { // finding wall entity
+                        walls.add(new Position(j, i));
+                        putEntity(new Position(j, i), new Wall());
+                    } else if ((temp == '.') || (temp == '@')) { // finding empty entity
+                        putEntity(new Position(j, i), new Empty());
+                    }
+                }
+            }
+        }
+    }
+
     public GameMap(int maxWidth, int maxHeight, Set<Position> destinations, Optional<Integer> undoLimit) {
         this.maxWidth = maxWidth;
         this.maxHeight = maxHeight;
